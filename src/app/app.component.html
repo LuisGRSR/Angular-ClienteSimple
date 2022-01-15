@@ -1,0 +1,12 @@
+<h1>Título</h1>
+<button (click)="getSigueMe()">Obtener</button>
+
+<div *ngFor="let sigueMe of sigueMes | async">
+  {{ sigueMe | json }}
+</div>
+
+<!--
+  <div *ngFor="let sigueMe of sigueMes | async">
+  {{ sigueMe | json }}
+</div>
+-->
