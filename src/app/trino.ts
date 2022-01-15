@@ -1,4 +1,4 @@
-export interface sigueMe {
+export interface trino {
   id: String;
   autor: String;
   post: String;
