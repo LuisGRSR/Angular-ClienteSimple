@@ -14,7 +14,7 @@ export class AppService {
   constructor(private http: HttpClient) {}
 
   getTrinosUser(): Observable<any> {
-    return this.http.get(this.ROOT_URL + 'api/Trinos');
+    return this.http.get(this.ROOT_URL + '/api/Trinos');
   }
 
   getSigueMe(): Observable<any> {

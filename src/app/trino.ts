@@ -1,7 +1,10 @@
+import { Punto } from "./punto/punto.types";
+
 export interface trino {
   id: String;
   autor: String;
   post: String;
-  lat: String;
-  lon: String;
+  lat: number;
+  lon: number;
+  Localizacion: Punto;
 }

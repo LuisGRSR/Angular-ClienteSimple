@@ -8,10 +8,12 @@ import { AppComponent } from './app.component';
 import { EntrarComponent } from './entrar/entrar.component';
 import { AppRoutingModule } from './app-routing.module';
 
+import { OlMapsModule } from './ol-maps/ol-maps.module';
+
 
 @NgModule({
   imports: [BrowserModule, FormsModule, HttpClientModule,
-  OAuthModule.forRoot(), AppRoutingModule
+  OAuthModule.forRoot(), AppRoutingModule, OlMapsModule
   ],
   exports: [AppComponent],
   declarations: [AppComponent, EntrarComponent],
