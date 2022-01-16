@@ -1,5 +1,18 @@
 <h1>Título</h1>
-<button (click)="getSigueMe()">Obtener</button>
+<div>
+<button (click)=login() *ngIf="!token">Login</button>
+<button (click)=logout() *ngIf="token">Logout</button>
+<button (click)=Acceder() *ngIf="token">Acceder</button>
+</div>
+
+<div *ngIf="token">
+
+  <label>Funciona</label>
+
+</div>
+
+
+<!--<button (click)="getSigueMe()">Obtener</button> -->
 
 
 <!--
