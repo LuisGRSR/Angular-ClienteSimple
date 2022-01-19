@@ -1,8 +1,8 @@
-import { Component, VERSION,EventEmitter,Output, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, VERSION,EventEmitter,Output, ViewChild, ElementRef, Input, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { sigueMe } from './sigueMe';
 import { trino } from './trino';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AnonymousSubject } from 'rxjs/internal/Subject';
 import { AppService } from './app.service';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
@@ -22,26 +22,43 @@ import { Punto } from './punto/punto.types';
 export class AppComponent {
   @Output() localizacionExp = new EventEmitter();
   @Output() details = new EventEmitter;
-  @ViewChild('localizacionText',{static:false}) textLocalizacionRef: ElementRef;
-  
-  
-  private sigueMes: Observable<any>;
+  @ViewChild('LocalizacionText',{static:false}) textLocalizacionRef: ElementRef;
 
-  trinosUser: Observable<trino>;
+  @ViewChild('Autor',{static:false}) AutorSelect: ElementRef;
+  @ViewChild('Destinatario',{static:false}) DestinatarioSelect: ElementRef;
+  @ViewChild('Post',{static:false}) Mensaje: ElementRef;
+  @ViewChild('coordenadasText',{static:false}) CoordenadasText: ElementRef;
+  
+  
+  sigueMes: sigueMe[] = [];
+
+  //trinosUser: Observable<trino>;
 
   trinos : trino[];
+
+  usuarios : String[]=[];
 
   subscription: any;
   localizacion: String;
 
+  trinoSubmit:trino;
+
+  puntoSelect:Punto;
+
+  testEmitter$ = new BehaviorSubject<sigueMe[]>(this.sigueMes);
+
   constructor(private http: HttpClient, private appService: AppService,
-    private oauthService:OAuthService, private router:Router) {
+    private oauthService:OAuthService, private router:Router, private ngZone: NgZone) {
 
       this.subscription = this.localizacionExp.subscribe(value=>{
         this.localizacion=value; //obtiene coordenadas pulsadas en el mapa
-        this.textLocalizacionRef.nativeElement.value=value;
+        
+        
+        this.puntoSelect= value ;
+        this.CoordenadasText.nativeElement.value="Lat: "+this.puntoSelect.lat.toString()+" , "+"Lon: "+this.puntoSelect.lon.toString();
+        this.textLocalizacionRef.nativeElement.value=this.puntoSelect.name;
         //this.textLocalizacionRef.nativeElement.value=value;
-    });
+      });
     //this.trinosUser = this.appService.getTrinosUser();
 
     //this.sigueMes = this.appService.getSigueMe();
@@ -52,6 +69,17 @@ export class AppComponent {
 
   ngOnInit(): void{
     this.getTrinosUser();
+    this.getSigueMe();
+
+
+    this.sigueMes.forEach(element => { //Forma de buscar todos los usuarios un poco extraña
+        if(!this.usuarios.includes(element.seguido)){
+            this.usuarios.push(element.seguido); 
+        }
+        if(!this.usuarios.includes(element.seguidor)){
+          this.usuarios.push(element.seguidor); 
+        }
+    });
     /*this.trinos.forEach(element => {
         this.details.subscribe(value=>{
           element.Localizacion=value;
@@ -88,7 +116,28 @@ export class AppComponent {
 
 
   getSigueMe() {
-    this.appService.getSigueMe();
+    this.appService.getSigueMe().subscribe(value=>{ 
+      //this.sigueMes = value as sigueMe[];
+      /*this.ngZone.run( ()=> {
+        this.sigueMes=value as sigueMe[];
+      });*/
+      this.sigueMes=value as sigueMe[];
+
+      this.sigueMes.forEach(element => { //Forma de buscar todos los usuarios un poco extraña
+        if(!this.usuarios.includes(element.seguido)){
+            this.usuarios.push(element.seguido); 
+        }
+        if(!this.usuarios.includes(element.seguidor)){
+          this.usuarios.push(element.seguidor); 
+        }
+      });
+
+      this.testEmitter$.next(this.sigueMes);
+      //console.log(this.sigueMes);
+    
+    
+    });
+    //this.sigueMes= this.appService.getSigueMe() as sigueMe[];
   }
 
   get token(){
@@ -99,7 +148,18 @@ export class AppComponent {
 
   Localizacion($event: any){
     console.log($event);
-    this.localizacionExp.emit($event.name);
+    this.localizacionExp.emit($event);
+  }
+
+
+  EnviarDatos(){
+    this.trinoSubmit=new trino();
+    this.trinoSubmit.autor=this.AutorSelect.nativeElement.value;
+    this.trinoSubmit.post=this.Mensaje.nativeElement.value;
+    this.trinoSubmit.lat=this.puntoSelect.lat;
+    this.trinoSubmit.lon=this.puntoSelect.lon;
+
+    this.appService.postTrino(this.trinoSubmit);
   }
 
   Acceder(){

@@ -1,6 +1,6 @@
 import { Punto } from "./punto/punto.types";
 
-export interface trino {
+export class trino {
   id: String;
   autor: String;
   post: String;

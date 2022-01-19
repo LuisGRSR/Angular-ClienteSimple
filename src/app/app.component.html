@@ -5,6 +5,8 @@
 <button (click)=Acceder() *ngIf="token">Acceder</button>
 </div>
 
+<br/>
+
 <div *ngIf="token">
 
   
@@ -17,8 +19,60 @@ matInput
 [placeholder]="'Localizacion'"
 [spellcheck]="false"
 >-->
+  <div>
+    <h2>Enviar Mensaje</h2>
+    <div>
+      <label>Autor: </label>
+      <select>
+        <option #Autor *ngFor="let usuario of usuarios">
+            {{usuario}}
+        </option>
+      </select>
+    </div>
 
+    <div>
+      <label>Destinatario: </label>
+      <select>
+        <option #Destinatario *ngFor="let usuario of usuarios">
+            {{usuario}}
+        </option>
+      </select>
+    </div>
 
+    <div>
+      <label>Mensaje: </label>
+      <textarea #Post></textarea>
+    </div>
+
+    <div>
+      <label>Coordenadas seleccionadas: </label>
+      <input #coordenadasText
+        readonly
+      >
+      <br/>
+      <label>Localizacion: </label>
+      <input #LocalizacionText
+        readonly
+      >
+    </div>
+    <ol-map
+            [lat]="-34.603490361131385"
+            [lon]="-58.382037891217465"
+            [zoom]="16"
+            width="100%"
+            height="100px"
+            (coords) = "Localizacion($event)"
+            >
+    </ol-map>
+
+    <button (click)="EnviarDatos()">Enviar</button>
+  </div>
+  
+  
+  
+  <br/>
+
+  <h2>Mostrar todos los mensajes</h2>
   <table [border]="1" class="table table-condensed table-bordered table-hover">
     <thead>
       <th>Autor</th>
